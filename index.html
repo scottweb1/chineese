@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <link rel="icon" type="image/x-icon" href="https://i.ibb.co/b7bLvjj/soner.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sondergaard</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .rotate {
+            width: 400px; /* Juster størrelsen som ønsket */
+            height: 400px; /* Juster størrelsen som ønsket */
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        audio {
+            display: none;
+        }
+
+        .timer {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .start-text {
+            font-size: 30px;
+            margin-bottom: 100px;
+            margin-top: 1px;
+            background-color: rgb(101, 101, 101);
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DINMOR</h1>
+    <div class="start-text" id="start-text">Tryk for at starte</div>
+    <audio id="background-audio" loop>
+        <source src="roverflexx.mp3" type="audio/mpeg">
+        Din browser understøtter ikke afspilning af lydfiler.
+    </audio>
+    <img src="https://yt3.googleusercontent.com/boN_PkudgYzV03V58apEDgM8GMoLDPPcv5IFJ6Xtnfexn0fduAr2DLo3wTp-zQFMTMxCGaiw=s900-c-k-c0x00ffffff-no-rj" alt="Roterende Billede" class="rotate">
+    <div class="timer">
+        Tid lyttet: <span id="current-time">0</span> sekunder<br>
+        Highscore: <span id="highscore">0</span> sekunder
+    </div>
+
+    <script>
+console.log("Website dev: Scott | YT: https://www.youtube.com/channel/UCXbosgp_Nla2l6V7tRj5L9A  | Mail: scott.guldbaek@gmail.com");
+
+        window.addEventListener('load', function() {
+            var audio = document.getElementById('background-audio');
+            var playPromise = audio.play();
+            var currentTimeElement = document.getElementById('current-time');
+            var highscoreElement = document.getElementById('highscore');
+            var startText = document.getElementById('start-text');
+
+            var currentTime = 0;
+            var highscore = localStorage.getItem('highscore') || 0;
+
+            highscoreElement.textContent = highscore;
+
+            function updateTimer() {
+                currentTime++;
+                currentTimeElement.textContent = currentTime;
+
+                if (currentTime > highscore) {
+                    highscore = currentTime;
+                    highscoreElement.textContent = highscore;
+                    localStorage.setItem('highscore', highscore);
+                }
+            }
+
+            var timerInterval;
+
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    timerInterval = setInterval(updateTimer, 1000);
+                    startText.style.display = 'none'; // Skjul start-teksten
+                }).catch(function(error) {
+                    document.body.addEventListener('click', function() {
+                        audio.play();
+                        timerInterval = setInterval(updateTimer, 1000);
+                        startText.style.display = 'none'; // Skjul start-teksten
+                    }, {once: true});
+                });
+            }
+
+            window.addEventListener('beforeunload', function() {
+                clearInterval(timerInterval);
+                if (currentTime > highscore) {
+                    localStorage.setItem('highscore', currentTime);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
